@@ -2,7 +2,8 @@ fastapi
 uvicorn
 python-multipart
 pyngrok
-nest-asyncio
+nest_asyncio
 tensorflow
 librosa
 numpy
+soundfile

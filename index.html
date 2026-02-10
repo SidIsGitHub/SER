@@ -291,7 +291,7 @@
         <script>
     // --- CONFIGURATION ---
     // 🔴 PASTE YOUR COLAB URL HERE (Don't forget the /predict at the end)
-    const API_URL = "https://agelessly-weatherly-arlie.ngrok-free.dev/predict"; 
+    const API_URL = "http://127.0.0.1:8001/predict"; 
 
     // --- UI ELEMENTS ---
     const island = document.getElementById('dynamic-island');
@@ -345,7 +345,8 @@
     }
 
     // --- 3. CORE: RECORDING ---
-    async function startRecording() {
+    async function startRecording(e) {
+        
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
@@ -368,6 +369,7 @@
             console.error("Mic Error:", err);
             alert("Please allow microphone access to talk to the plant!");
         }
+        e.preventDefault();
     }
 
     function stopRecording() {
@@ -379,35 +381,45 @@
     }
 
     // --- 4. THE BRIDGE: SEND TO COLAB ---
+    // --- 4. THE BRIDGE: SEND TO BRAIN (Debug Version) ---
     async function sendToBrain(blob) {
         const formData = new FormData();
         formData.append("file", blob, "voice_input.wav");
 
         try {
+            statusText.innerText = "Sending to Brain..."; // Status Update
+            
             const response = await fetch(API_URL, {
                 method: "POST",
                 body: formData
             });
 
             const data = await response.json();
-            
-            // --- 5. THE REACTION ---
-            console.log("AI Response:", data);
-            
-            // Show the result!
-            statusText.innerText = `You sound ${data.emotion} (${(data.confidence*100).toFixed(0)}%)`;
+            console.log("AI Raw Data:", data); 
+
+            // 🚨 IF PYTHON SENT AN ERROR
+            if (data.error) {
+                // Show the ACTUAL error on screen
+                statusText.innerText = "Server Error: " + data.error;
+                statusText.parentElement.style.opacity = '1';
+                // Make it red so you know it failed
+                statusText.style.color = "#ff4444"; 
+                return; 
+            }
+
+            // SUCCESS
+            const confidence = (data.confidence * 100).toFixed(0);
+            statusText.style.color = "rgba(255, 255, 255, 0.8)"; // Reset color
+            statusText.innerText = `You sound ${data.emotion} (${confidence}%)`;
             statusText.parentElement.style.opacity = '1';
             
-            // Auto-close after 3 seconds so they can read it
-            setTimeout(() => closeIsland(), 3000);
-
-            // OPTIONAL: Update Plant Color based on Emotion
             updatePlantVibe(data.emotion);
+            setTimeout(() => closeIsland(), 4000);
 
         } catch (error) {
             console.error("Connection Failed:", error);
-            statusText.innerText = "Error connecting to Brain.";
-            setTimeout(() => closeIsland(), 2000);
+            statusText.innerText = "Connection Failed. Is Python running?";
+            statusText.style.color = "#ff4444";
         }
     }
 
