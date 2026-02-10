@@ -13,10 +13,16 @@ ngrok.set_auth_token("YOUR_TOKEN_HERE")
 
 def extract_features(path):
     y, sr = librosa.load(path, duration=3, offset=0.5)
-    mfccs = np.mean(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40).T, axis=0)
-    chroma = np.mean(librosa.feature.chroma_stft(y=y, sr=sr).T, axis=0)
-    mel = np.mean(librosa.feature.melspectrogram(y=y, sr=sr).T, axis=0)
-    return np.hstack([mfccs, chroma, mel])
+    
+    # NEW: Standardize the audio volume before extracting
+    y = librosa.util.normalize(y) 
+    
+    mfcc = np.mean(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40).T, axis=0)
+    
+    # NEW: Z-score normalization (Centers the data)
+    mfcc = (mfcc - np.mean(mfcc)) / (np.std(mfcc) + 1e-6)
+    
+    return mfcc
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
