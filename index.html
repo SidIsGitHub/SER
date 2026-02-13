@@ -1,146 +1,65 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8" />
-
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-
-    <title>Mental Health Recording - Dark Mode Plant State</title>
-
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet" />
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    <title>Mental Health - Live Biofeedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
         rel="stylesheet" />
 
-    <script id="tailwind-config">
-
+    <script>
         tailwind.config = {
-
             darkMode: "class",
-
             theme: {
-
                 extend: {
-
                     colors: {
-
                         "primary": "#19e619",
-
-                        "background-light": "#f6f8f6",
-
-                        "background-dark": "#112111", "background-navy": "#0f172a", "text-main": "#111811",
-
-                        "surface-light": "#ffffff",
-
+                        "background-navy": "#0f172a",
                     },
-
-                    fontFamily: {
-
-                        "display": ["Manrope", "sans-serif"]
-
-                    },
-
-                    borderRadius: {
-
-                        "DEFAULT": "1rem",
-
-                        "lg": "2rem",
-
-                        "xl": "3rem",
-
-                        "full": "9999px"
-
-                    },
-
+                    fontFamily: { "display": ["Manrope", "sans-serif"] },
                 },
-
             },
-
         }
-
     </script>
 
     <style>
-        .no-scrollbar::-webkit-scrollbar {
-
-            display: none;
-
+        /* SMOOTH GLOW BACKGROUND */
+        #mood-glow {
+            position: absolute;
+            inset: 0;
+            opacity: 1;
+            transition: background 1s ease;
+            z-index: 1;
+            pointer-events: none;
         }
 
-        .no-scrollbar {
-
-            -ms-overflow-style: none;
-
-            scrollbar-width: none;
-
+        body {
+            background-color: #0f172a;
+            min-height: 100vh;
+            overflow: hidden;
         }
 
-        @keyframes wave {
+        /* PLANT ANIMATION */
+        @keyframes grow {
 
             0%,
             100% {
-                height: 10%;
+                transform: scale(0.95);
             }
 
             50% {
-                height: 100%;
+                transform: scale(1.05);
             }
-
         }
 
-        .wave-bar {
-
-            animation: wave 1s ease-in-out infinite;
-
+        .plant-grow {
+            animation: grow 4s ease-in-out infinite;
         }
 
-        .wave-bar:nth-child(1) {
-            animation-duration: 0.8s;
-        }
-
-        .wave-bar:nth-child(2) {
-            animation-duration: 1.1s;
-        }
-
-        .wave-bar:nth-child(3) {
-            animation-duration: 0.9s;
-        }
-
-        .wave-bar:nth-child(4) {
-            animation-duration: 1.2s;
-        }
-
-        .wave-bar:nth-child(5) {
-            animation-duration: 0.7s;
-        }
-
-        .wave-bar:nth-child(6) {
-            animation-duration: 1.0s;
-        }
-
-        .wave-bar:nth-child(7) {
-            animation-duration: 0.8s;
-        }
-
-        .wave-bar:nth-child(8) {
-            animation-duration: 1.3s;
-        }
-
-        .wave-bar:nth-child(9) {
-            animation-duration: 0.9s;
-        }
-
-        .wave-bar:nth-child(10) {
-            animation-duration: 1.1s;
-        }
-
-        /* Custom Wave Animation */
+        /* WAVE ANIMATION */
         @keyframes wave {
 
             0%,
@@ -155,80 +74,48 @@
             }
         }
 
-        /* The "Apple" Spring Physics Curve */
-        .spring-transition {
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .wave-bar {
+            animation: wave 1s ease-in-out infinite;
         }
 
-        @keyframes grow {
+        /* FADE IN TRANSCRIPT */
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
 
-            0% {
-                transform: scale(0.95);
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
             }
 
-            50% {
-                transform: scale(1.05);
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
-
-            100% {
-                transform: scale(0.95);
-            }
-
-        }
-
-        .plant-grow {
-
-            animation: grow 4s ease-in-out infinite;
-
         }
     </style>
-
-    <style>
-        body {
-
-            min-height: max(884px, 100dvh);
-
-        }
-    </style>
-
-    <style>
-        body {
-
-            min-height: max(884px, 100dvh);
-
-        }
-    </style>
-
 </head>
 
-<body
-    class="bg-background-navy font-display min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+<body class="font-display min-h-screen flex flex-col items-center justify-center relative">
 
-    <div class="relative w-full max-w-md h-full min-h-screen flex flex-col bg-background-navy overflow-hidden">
+    <div id="mood-glow"></div>
 
-        <div class="flex-1 flex flex-col items-center justify-center pb-32 relative">
+    <div class="relative w-full max-w-md h-full flex flex-col z-50 pointer-events-none">
 
+        <div class="flex-1 flex flex-col items-center justify-center pb-40 pointer-events-auto transition-all duration-500"
+            id="visual-container">
             <div class="relative w-64 h-64 flex items-end justify-center plant-grow">
-
                 <div
                     class="w-32 h-28 bg-[#2d3748] rounded-b-3xl rounded-t-lg relative z-10 shadow-2xl border border-white/5">
-
-                    <div class="absolute top-0 left-0 right-0 h-4 bg-[#4a5568] rounded-t-lg opacity-50"></div>
-
                 </div>
 
                 <div
                     class="absolute bottom-24 w-2 h-32 bg-green-700/80 rounded-full z-0 origin-bottom transform -translate-x-1">
                 </div>
-
                 <div
                     class="absolute bottom-36 left-12 w-20 h-20 bg-green-500 rounded-tr-[4rem] rounded-bl-[4rem] transform -rotate-45 shadow-lg opacity-90">
                 </div>
-
-                <div
-                    class="absolute bottom-36 left-12 w-20 h-20 bg-green-400/20 rounded-tr-[4rem] rounded-bl-[4rem] transform -rotate-45 scale-90">
-                </div>
-
                 <div
                     class="absolute bottom-40 right-10 w-24 h-24 bg-green-400 rounded-tl-[4rem] rounded-br-[4rem] transform rotate-45 shadow-lg">
                 </div>
@@ -236,228 +123,319 @@
                 <div
                     class="absolute bottom-56 w-16 h-16 bg-primary rounded-tr-[3rem] rounded-bl-[3rem] transform -rotate-12 shadow-[0_0_20px_rgba(25,230,25,0.4)]">
                 </div>
-
-                <div
-                    class="absolute bottom-20 left-1/2 -translate-x-1/2 w-48 h-48 bg-primary/20 blur-[60px] rounded-full -z-10">
-                </div>
-
             </div>
 
+            <div id="transcript-container" class="mt-8 px-6 text-center h-24 flex items-center justify-center">
+                <p id="transcript-text"
+                    class="text-white/80 text-xl font-medium leading-relaxed drop-shadow-md min-h-[1.5em]">
+                </p>
+            </div>
         </div>
 
-        <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center">
+        <div
+            class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center w-full pointer-events-auto">
 
-            <div id="status-text"
-                class="mb-4 text-center opacity-0 transition-opacity duration-300 pointer-events-none">
-                <p class="text-white/80 text-lg font-medium tracking-wide">Listening...</p>
+            <div id="status-container" class="mb-4 text-center opacity-0 transition-opacity duration-300">
+                <p id="status-text" class="text-white/90 text-xl font-bold tracking-wide drop-shadow-md">Ready</p>
             </div>
 
             <div id="dynamic-island"
-                class="relative bg-[#1a2c1a] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] w-16 h-16 rounded-[32px]">
+                class="relative bg-[#1a2c1a] shadow-2xl border border-white/10 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] w-16 h-16 rounded-[32px]">
 
                 <div id="state-idle"
                     class="absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-100">
                     <button id="btn-record"
-                        class="w-full h-full flex items-center justify-center text-primary hover:text-white transition-colors">
+                        class="w-full h-full flex items-center justify-center text-primary hover:text-white transition-colors cursor-pointer">
                         <span class="material-symbols-outlined text-[32px]">mic</span>
                     </button>
                 </div>
 
                 <div id="state-recording"
-                    class="absolute inset-0 flex items-center justify-between px-1 opacity-0 transition-opacity duration-300 pointer-events-none">
-
-                    <button id="btn-cancel"
-                        class="w-12 h-12 flex items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-[20px]">close</span>
-                    </button>
-
-                    <div class="flex items-center gap-[3px] h-8 mx-2">
-                        <div class="w-1 bg-primary rounded-full animate-[wave_1s_ease-in-out_infinite]"></div>
-                        <div class="w-1 bg-primary rounded-full animate-[wave_1.2s_ease-in-out_infinite]"></div>
-                        <div class="w-1 bg-primary rounded-full animate-[wave_0.8s_ease-in-out_infinite]"></div>
-                        <div class="w-1 bg-primary rounded-full animate-[wave_1.1s_ease-in-out_infinite]"></div>
+                    class="absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                    <div class="flex items-center justify-between w-full px-4 pt-3">
+                        <button id="btn-stop"
+                            class="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-400 text-white shadow-lg cursor-pointer z-20">
+                            <div class="w-3 h-3 bg-white rounded-[2px]"></div>
+                        </button>
+                        <div class="flex items-center gap-[3px] h-6 mx-2">
+                            <div class="w-1 bg-primary rounded-full wave-bar" style="animation-duration: 0.8s"></div>
+                            <div class="w-1 bg-primary rounded-full wave-bar" style="animation-duration: 1.1s"></div>
+                            <div class="w-1 bg-primary rounded-full wave-bar" style="animation-duration: 0.9s"></div>
+                        </div>
                     </div>
-
-                    <button id="btn-stop"
-                        class="w-12 h-12 flex items-center justify-center rounded-full bg-primary hover:bg-green-400 text-background-navy shadow-lg transition-transform active:scale-90">
-                        <div class="w-4 h-4 bg-background-navy rounded-[2px]"></div>
-                    </button>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-white/10">
+                        <div id="pulse-bar" class="h-full bg-primary shadow-[0_0_10px_#19e619] w-0"></div>
+                    </div>
                 </div>
 
             </div>
         </div>
+    </div>
 
+    <script>
+        // --- CONFIGURATION ---
+        const API_URL = "http://127.0.0.1:8001/predict";
+        const SLICE_TIME_MS = 3000;
 
-        <script>
-    // --- CONFIGURATION ---
-    // 🔴 PASTE YOUR COLAB URL HERE (Don't forget the /predict at the end)
-    const API_URL = "http://127.0.0.1:8001/predict"; 
+        // --- STATE ---
+        let isLive = false;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recognition = null; // 🔴 STT Engine
 
-    // --- UI ELEMENTS ---
-    const island = document.getElementById('dynamic-island');
-    const stateIdle = document.getElementById('state-idle');
-    const stateRec = document.getElementById('state-recording');
-    const statusText = document.querySelector('#status-text p'); // Select the paragraph inside
+        // --- UI REFS ---
+        const glowLayer = document.getElementById('mood-glow');
+        const statusText = document.getElementById('status-text');
+        const statusContainer = document.getElementById('status-container');
+        const island = document.getElementById('dynamic-island');
+        const stateIdle = document.getElementById('state-idle');
+        const stateRec = document.getElementById('state-recording');
+        const btnRecord = document.getElementById('btn-record');
+        const btnStop = document.getElementById('btn-stop');
+        const pulseBar = document.getElementById('pulse-bar');
+        const transcriptText = document.getElementById('transcript-text');
 
-    const btnRecord = document.getElementById('btn-record');
-    const btnStop = document.getElementById('btn-stop');
-    const btnCancel = document.getElementById('btn-cancel');
+        // --- COLORS ---
+        const COLORS = {
+            'angry': 'radial-gradient(circle, rgba(255, 0, 0, 0.8) 0%, transparent 70%)',
+            'happy': 'radial-gradient(circle, rgba(255, 220, 0, 0.6) 0%, transparent 70%)',
+            'sad': 'radial-gradient(circle, rgba(0, 80, 255, 0.8) 0%, transparent 70%)',
+            'fearful': 'radial-gradient(circle, rgba(140, 0, 255, 0.8) 0%, transparent 70%)',
+            'calm': 'radial-gradient(circle, rgba(0, 255, 255, 0.6) 0%, transparent 70%)',
+            'neutral': 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)'
+        };
 
-    // --- AUDIO VARIABLES ---
-    let mediaRecorder;
-    let audioChunks = [];
-
-    // --- 1. ANIMATION: EXPAND (Start Listening) ---
-    function openIsland() {
-        // Expand
-        island.style.width = '240px'; 
-        island.style.height = '64px';
-        island.style.borderRadius = '32px';
-
-        // Switch States
-        stateIdle.style.opacity = '0';
-        stateIdle.style.pointerEvents = 'none';
-        
-        setTimeout(() => {
-            stateRec.style.opacity = '1';
-            stateRec.style.pointerEvents = 'auto';
-            statusText.innerText = "Listening...";
-            statusText.parentElement.style.opacity = '1';
-        }, 200);
-    }
-
-    // --- 2. ANIMATION: COLLAPSE (Reset) ---
-    function closeIsland() {
-        stateRec.style.opacity = '0';
-        stateRec.style.pointerEvents = 'none';
-        statusText.parentElement.style.opacity = '0';
-
-        setTimeout(() => {
-            island.style.width = '64px';
-            island.style.height = '64px';
-            island.style.borderRadius = '32px';
-            
-            stateIdle.style.opacity = '1';
-            stateIdle.style.pointerEvents = 'auto';
-            // Reset text for next time
-            setTimeout(() => statusText.innerText = "Listening...", 300);
-        }, 100);
-    }
-
-    // --- 3. CORE: RECORDING ---
-    async function startRecording(e) {
-        
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-
-            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-
-            mediaRecorder.onstop = async () => {
-                // Create the audio file
-                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                
-                // Send it to the AI
-                sendToBrain(audioBlob);
-            };
-
-            mediaRecorder.start();
-            openIsland();
-
-        } catch (err) {
-            console.error("Mic Error:", err);
-            alert("Please allow microphone access to talk to the plant!");
-        }
-        e.preventDefault();
-    }
-
-    function stopRecording() {
-        if (mediaRecorder && mediaRecorder.state !== "inactive") {
-            mediaRecorder.stop();
-            // Update UI immediately to show we are working
-            statusText.innerText = "Thinking...";
-        }
-    }
-
-    // --- 4. THE BRIDGE: SEND TO COLAB ---
-    // --- 4. THE BRIDGE: SEND TO BRAIN (Debug Version) ---
-    async function sendToBrain(blob) {
-        const formData = new FormData();
-        formData.append("file", blob, "voice_input.wav");
-
-        try {
-            statusText.innerText = "Sending to Brain..."; // Status Update
-            
-            const response = await fetch(API_URL, {
-                method: "POST",
-                body: formData
-            });
-
-            const data = await response.json();
-            console.log("AI Raw Data:", data); 
-
-            // 🚨 IF PYTHON SENT AN ERROR
-            if (data.error) {
-                // Show the ACTUAL error on screen
-                statusText.innerText = "Server Error: " + data.error;
-                statusText.parentElement.style.opacity = '1';
-                // Make it red so you know it failed
-                statusText.style.color = "#ff4444"; 
-                return; 
+        // --- 1. SETUP SPEECH RECOGNITION (STT) ---
+        function initSTT() {
+            // Check browser support
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Your browser does not support Speech Recognition. Try Chrome or Edge.");
+                return null;
             }
 
-            // SUCCESS
-            const confidence = (data.confidence * 100).toFixed(0);
-            statusText.style.color = "rgba(255, 255, 255, 0.8)"; // Reset color
-            statusText.innerText = `You sound ${data.emotion} (${confidence}%)`;
-            statusText.parentElement.style.opacity = '1';
-            
-            updatePlantVibe(data.emotion);
-            setTimeout(() => closeIsland(), 4000);
+            const rec = new SpeechRecognition();
+            rec.continuous = true;      // Keep listening even if user pauses
+            rec.interimResults = true;  // Show text WHILE speaking
+            rec.lang = 'en-US';
 
-        } catch (error) {
-            console.error("Connection Failed:", error);
-            statusText.innerText = "Connection Failed. Is Python running?";
-            statusText.style.color = "#ff4444";
+            rec.onresult = (event) => {
+                let finalTranscript = '';
+                let interimTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                // Update UI: Prioritize interim text for "Live" feel
+                const textToShow = interimTranscript || finalTranscript;
+                if (textToShow) {
+                    transcriptText.innerText = `"${textToShow}"`;
+                    transcriptText.style.opacity = '1';
+                }
+            };
+
+            rec.onerror = (event) => {
+                console.error("STT Error:", event.error);
+            };
+
+            return rec;
         }
-    }
 
-    // --- 6. VISUAL FEEDBACK (Plant Logic) ---
-    function updatePlantVibe(emotion) {
-        // Example: Find the glow element and change color
-        const glow = document.querySelector('.bg-primary\\/20'); 
-        const primary = document.querySelectorAll('.bg-primary');
+        // Initialize STT Engine
+        recognition = initSTT();
 
-        if (!glow) return;
 
-        // Reset classes
-        glow.className = "absolute bottom-20 left-1/2 -translate-x-1/2 w-48 h-48 blur-[60px] rounded-full -z-10 transition-colors duration-1000";
+        // --- 2. TOGGLE LIVE MODE ---
+        async function toggleLiveMode() {
+            if (!isLive) {
+                // START
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    isLive = true;
+                    setUIState(true);
 
-        if (emotion === 'angry') {
-            glow.classList.add('bg-red-500/40');
-        } else if (emotion === 'sad') {
-            glow.classList.add('bg-blue-500/40');
-        } else if (emotion === 'happy') {
-            glow.classList.add('bg-yellow-400/40');
-        } else {
-            glow.classList.add('bg-primary/20'); // Default Green
+                    // Start Pulse (Audio to Python)
+                    startPulseLoop(stream);
+
+                    // Start STT (Text to Screen)
+                    if (recognition) recognition.start();
+
+                } catch (err) {
+                    alert("Microphone access denied.");
+                    console.error(err);
+                }
+            } else {
+                // STOP
+                isLive = false;
+                setUIState(false);
+
+                // Stop Pulse
+                if (mediaRecorder) mediaRecorder.stop();
+
+                // Stop STT & Trigger Brain
+                if (recognition) {
+                    recognition.stop();
+
+                    // WAIT 1s for the final text to settle, then Ask Brain
+                    setTimeout(() => {
+                        const finalText = transcriptText.innerText.replace(/"/g, '');
+                        // Get current emotion from status text
+                        // We split "SAD (85%)" to just get "sad"
+                        const currentStatus = statusText.innerText.split(' ')[0].toLowerCase();
+
+                        if (finalText.length > 0) {
+                            askLocalBrain(finalText, currentStatus);
+                        }
+                    }, 1000);
+                }
+
+                glowLayer.style.background = 'none';
+            }
         }
-    }
 
-    // --- EVENT LISTENERS ---
-    btnRecord.addEventListener('click', startRecording);
-    
-    // The "Stop" button is the little square
-    const btnStopInner = document.querySelector('#state-recording button:last-child'); 
-    if(btnStopInner) btnStopInner.addEventListener('click', stopRecording);
+        // --- 3. THE PULSE LOOP (Audio Slices) ---
+        function startPulseLoop(stream) {
+            function recordSlice() {
+                if (!isLive) return;
 
-    // Cancel button
-    document.getElementById('btn-cancel').addEventListener('click', () => {
-        if(mediaRecorder) mediaRecorder.stop(); // Stop mic
-        audioChunks = []; // Clear data
-        closeIsland(); // Reset UI
-    });
+                // Reset & Animate Pulse Bar
+                pulseBar.style.transition = 'none';
+                pulseBar.style.width = '0%';
+                void pulseBar.offsetWidth; // Force Reflow
+                pulseBar.style.transition = `width ${SLICE_TIME_MS}ms linear`;
+                pulseBar.style.width = '100%';
+
+                // Start Recording
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+                mediaRecorder.onstop = () => {
+                    if (!isLive) return;
+                    const blob = new Blob(audioChunks, { type: 'audio/wav' });
+                    sendToBrain(blob);
+                    recordSlice(); // Recursive Loop
+                };
+
+                mediaRecorder.start();
+                setTimeout(() => {
+                    if (mediaRecorder.state === 'recording') mediaRecorder.stop();
+                }, SLICE_TIME_MS);
+            }
+            recordSlice();
+        }
+
+        // --- 4. API CALL ---
+        async function sendToBrain(blob) {
+            const formData = new FormData();
+            formData.append("file", blob, "live_chunk.wav");
+
+            try {
+                const response = await fetch(API_URL, { method: "POST", body: formData });
+                const data = await response.json();
+
+                if (data.error) return;
+
+                // Update Glow & Status
+                const emotionKey = data.emotion.toLowerCase();
+                const bgStyle = COLORS[emotionKey] || COLORS['neutral'];
+                glowLayer.style.background = bgStyle;
+                statusText.innerText = `${data.emotion.toUpperCase()} (${(data.confidence * 100).toFixed(0)}%)`;
+
+            } catch (e) {
+                console.log("Packet dropped (Normal in live mode)");
+            }
+        }
+
+        // --- UI TRANSITIONS ---
+        function setUIState(recording) {
+            if (recording) {
+                island.style.width = '200px';
+                stateIdle.style.opacity = '0';
+                stateIdle.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    stateRec.style.opacity = '1';
+                    stateRec.style.pointerEvents = 'auto';
+                    statusContainer.style.opacity = '1';
+                    statusText.innerText = "Listening...";
+                }, 200);
+            } else {
+                stateRec.style.opacity = '0';
+                stateRec.style.pointerEvents = 'none';
+                statusContainer.style.opacity = '0';
+                setTimeout(() => {
+                    island.style.width = '64px';
+                    stateIdle.style.opacity = '1';
+                    stateIdle.style.pointerEvents = 'auto';
+                }, 100);
+            }
+        }
+
+        // --- LISTENERS ---
+        btnRecord.addEventListener('click', toggleLiveMode);
+        btnStop.addEventListener('click', toggleLiveMode);
+        // --- 5. ASK THE LOCAL BRAIN & SPEAK ---
+        async function askLocalBrain(finalTranscript, lastEmotion) {
+            if (!finalTranscript || finalTranscript.length < 2) return;
+
+            // Show "Thinking" UI
+            statusText.innerText = "Thinking...";
+            pulseBar.style.background = "#ffffff"; // White pulse = thinking
+
+            const formData = new FormData();
+            formData.append("text", finalTranscript);
+            formData.append("emotion", lastEmotion);
+
+            try {
+                const response = await fetch("http://127.0.0.1:8001/ask_brain", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await response.json();
+
+                // DISPLAY & SPEAK
+                // 1. Show the AI response text
+                transcriptText.innerText = `AI: "${data.reply}"`;
+
+                // 2. Speak it with EMOTION
+                robotSpeak(data.reply, lastEmotion);
+
+                statusText.innerText = "Ready";
+            } catch (e) {
+                console.error("Brain Dead:", e);
+                statusText.innerText = "Error";
+            }
+        }
+
+        // --- 6. TTS FUNCTION (The "Puppet Master") ---
+        function robotSpeak(text, emotion) {
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+
+            // Modulate Voice based on Emotion
+            if (emotion === "sad") {
+                utterance.rate = 0.85;
+                utterance.pitch = 0.8;
+            } else if (emotion === "happy") {
+                utterance.rate = 1.1;
+                utterance.pitch = 1.2;
+            } else if (emotion === "angry") {
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
+            } else {
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+            }
+
+            synth.speak(utterance);
+        }
+
+
     </script>
 </body>
 
