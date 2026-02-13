@@ -1,4 +1,3 @@
-import nest_asyncio
 import uvicorn
 import shutil
 import numpy as np
@@ -8,17 +7,25 @@ import subprocess
 import tensorflow as tf
 import tempfile
 import time
-import requests  # <--- NEW: To talk to Ollama
+import requests
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
-from pyngrok import ngrok, conf
+from pyngrok import ngrok
 
 # 🔴 CONFIGURATION
-NGROK_TOKEN = "39RHofYyfja9NCpTPPfMAhk4UTZ_GcQ1ZA5kBEv89kdmHdaq" # Put your token back!
+NGROK_TOKEN = "39RHofYyfja9NCpTPPfMAhk4UTZ_GcQ1ZA5kBEv89kdmHdaq"
 ngrok.set_auth_token(NGROK_TOKEN)
 
 app = FastAPI()
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+# 🔴 CRITICAL FIX: Allow ALL Origins so Frontend can talk to Backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Load Model
 MODEL_PATH = "master_emotion_engine.h5"
@@ -31,7 +38,6 @@ except:
 
 EMOTIONS = ['neutral', 'calm', 'happy', 'sad', 'angry', 'fearful', 'disgust', 'surprised']
 
-# --- HELPER: SAFE DELETE ---
 def safe_delete(path):
     try:
         os.remove(path)
@@ -69,10 +75,8 @@ def extract_features(input_path):
         safe_delete(clean_wav_path)
         return None, 0
 
-# --- 1. THE PULSE ENDPOINT (Visuals Only) ---
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
-    # Create Input Temp File
     temp_input = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
     input_filename = temp_input.name
     temp_input.close() 
@@ -88,7 +92,6 @@ async def predict(file: UploadFile = File(...)):
 
         if features is None: return {"error": "Audio processing failed"}
 
-        # Silence Gate
         if energy < 0.005: 
             return {"emotion": "neutral", "confidence": 0.99}
 
@@ -96,7 +99,6 @@ async def predict(file: UploadFile = File(...)):
         features = np.expand_dims(np.expand_dims(features, -1), 0)
         pred = model.predict(features)[0]
         
-        # Logic Patch
         pred[1]=0; pred[6]=0; pred[7]=0; pred[0]*=0.4
         if pred[3]>0.1: pred[3]*=2.0
         
@@ -113,31 +115,22 @@ async def predict(file: UploadFile = File(...)):
         safe_delete(input_filename)
         return {"error": str(e)}
 
-
-# --- 2. 🔴 NEW: THE LOCAL LLM ENDPOINT ---
 @app.post("/ask_brain")
 async def ask_brain(text: str = Form(...), emotion: str = Form(...)):
     print(f"🧠 THINKING: Text='{text}' | Emotion='{emotion}'")
     
-    # 1. CONSTRUCT THE "FUSION" PROMPT
-    # This is where we combine the STT (Content) and SER (Context)
     system_prompt = f"""
     You are an empathetic emotional support assistant.
-    
     CURRENT USER STATE:
-    - Voice Tone Analysis: {emotion.upper()} (Biologically detected)
+    - Voice Tone Analysis: {emotion.upper()}
     - User Said: "{text}"
-    
     INSTRUCTIONS:
     1. Trust the Voice Tone. If they say "I'm fine" but tone is SAD, address the sadness.
     2. Keep your response SHORT (under 2 sentences).
     3. Do not be a robot. Be warm and human.
-    4. If the tone is ANGRY, de-escalate. If SAD, validate.
     """
 
     try:
-        # 2. CALL LOCAL OLLAMA (No Internet Required!)
-        # Note: We use "stream": False so we get the whole text at once
         response = requests.post('http://localhost:11434/api/generate', json={
             "model": "llama3",  
             "prompt": system_prompt,
@@ -153,10 +146,19 @@ async def ask_brain(text: str = Form(...), emotion: str = Form(...)):
             
     except Exception as e:
         print(f"❌ Ollama Error: {e}")
-        return {"reply": "Connection to Brain failed. Is Ollama running?"}
+        return {"reply": "Brain disconnected. Is Ollama running?"}
 
 if __name__ == "__main__":
     try: os.system("taskkill /f /im ngrok.exe")
     except: pass
-    nest_asyncio.apply()
+    
+    # Start Ngrok Tunnel
+    try:
+        public_url = ngrok.connect(8001).public_url
+        print(f"\n🚀 PUBLIC URL: {public_url}")
+    except:
+        print("⚠️ Ngrok failed to start (check token). Running local only.")
+
+    # Start Server
+    print("✅ Server running on http://127.0.0.1:8001")
     uvicorn.run(app, port=8001)

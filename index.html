@@ -1,160 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Mental Health - Live Biofeedback</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
-        rel="stylesheet" />
-
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet" />
     <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
-                    colors: {
-                        "primary": "#19e619",
-                        "background-navy": "#0f172a",
-                    },
+                    colors: { "primary": "#19e619", "background-navy": "#0f172a" },
                     fontFamily: { "display": ["Manrope", "sans-serif"] },
                 },
             },
         }
     </script>
-
     <style>
-        /* SMOOTH GLOW BACKGROUND */
-        #mood-glow {
-            position: absolute;
-            inset: 0;
-            opacity: 1;
-            transition: background 1s ease;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        body {
-            background-color: #0f172a;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-
-        /* PLANT ANIMATION */
-        @keyframes grow {
-
-            0%,
-            100% {
-                transform: scale(0.95);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .plant-grow {
-            animation: grow 4s ease-in-out infinite;
-        }
-
-        /* WAVE ANIMATION */
-        @keyframes wave {
-
-            0%,
-            100% {
-                height: 4px;
-                opacity: 0.5;
-            }
-
-            50% {
-                height: 24px;
-                opacity: 1;
-            }
-        }
-
-        .wave-bar {
-            animation: wave 1s ease-in-out infinite;
-        }
-
-        /* FADE IN TRANSCRIPT */
-        .fade-in-up {
-            animation: fadeInUp 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        #mood-glow { position: absolute; inset: 0; opacity: 1; transition: background 1s ease; z-index: 1; pointer-events: none; }
+        body { background-color: #0f172a; min-height: 100vh; overflow: hidden; }
+        @keyframes grow { 0%, 100% { transform: scale(0.95); } 50% { transform: scale(1.05); } }
+        .plant-grow { animation: grow 4s ease-in-out infinite; }
+        @keyframes wave { 0%, 100% { height: 4px; opacity: 0.5; } 50% { height: 24px; opacity: 1; } }
+        .wave-bar { animation: wave 1s ease-in-out infinite; }
     </style>
 </head>
 
 <body class="font-display min-h-screen flex flex-col items-center justify-center relative">
-
     <div id="mood-glow"></div>
-
     <div class="relative w-full max-w-md h-full flex flex-col z-50 pointer-events-none">
-
-        <div class="flex-1 flex flex-col items-center justify-center pb-40 pointer-events-auto transition-all duration-500"
-            id="visual-container">
+        <div class="flex-1 flex flex-col items-center justify-center pb-40 pointer-events-auto transition-all duration-500" id="visual-container">
             <div class="relative w-64 h-64 flex items-end justify-center plant-grow">
-                <div
-                    class="w-32 h-28 bg-[#2d3748] rounded-b-3xl rounded-t-lg relative z-10 shadow-2xl border border-white/5">
-                </div>
-
-                <div
-                    class="absolute bottom-24 w-2 h-32 bg-green-700/80 rounded-full z-0 origin-bottom transform -translate-x-1">
-                </div>
-                <div
-                    class="absolute bottom-36 left-12 w-20 h-20 bg-green-500 rounded-tr-[4rem] rounded-bl-[4rem] transform -rotate-45 shadow-lg opacity-90">
-                </div>
-                <div
-                    class="absolute bottom-40 right-10 w-24 h-24 bg-green-400 rounded-tl-[4rem] rounded-br-[4rem] transform rotate-45 shadow-lg">
-                </div>
-
-                <div
-                    class="absolute bottom-56 w-16 h-16 bg-primary rounded-tr-[3rem] rounded-bl-[3rem] transform -rotate-12 shadow-[0_0_20px_rgba(25,230,25,0.4)]">
-                </div>
+                <div class="w-32 h-28 bg-[#2d3748] rounded-b-3xl rounded-t-lg relative z-10 shadow-2xl border border-white/5"></div>
+                <div class="absolute bottom-24 w-2 h-32 bg-green-700/80 rounded-full z-0 origin-bottom transform -translate-x-1"></div>
+                <div class="absolute bottom-36 left-12 w-20 h-20 bg-green-500 rounded-tr-[4rem] rounded-bl-[4rem] transform -rotate-45 shadow-lg opacity-90"></div>
+                <div class="absolute bottom-40 right-10 w-24 h-24 bg-green-400 rounded-tl-[4rem] rounded-br-[4rem] transform rotate-45 shadow-lg"></div>
+                <div class="absolute bottom-56 w-16 h-16 bg-primary rounded-tr-[3rem] rounded-bl-[3rem] transform -rotate-12 shadow-[0_0_20px_rgba(25,230,25,0.4)]"></div>
             </div>
-
             <div id="transcript-container" class="mt-8 px-6 text-center h-24 flex items-center justify-center">
-                <p id="transcript-text"
-                    class="text-white/80 text-xl font-medium leading-relaxed drop-shadow-md min-h-[1.5em]">
-                </p>
+                <p id="transcript-text" class="text-white/80 text-xl font-medium leading-relaxed drop-shadow-md min-h-[1.5em]"></p>
             </div>
         </div>
 
-        <div
-            class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center w-full pointer-events-auto">
-
+        <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center w-full pointer-events-auto">
             <div id="status-container" class="mb-4 text-center opacity-0 transition-opacity duration-300">
                 <p id="status-text" class="text-white/90 text-xl font-bold tracking-wide drop-shadow-md">Ready</p>
             </div>
-
-            <div id="dynamic-island"
-                class="relative bg-[#1a2c1a] shadow-2xl border border-white/10 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] w-16 h-16 rounded-[32px]">
-
-                <div id="state-idle"
-                    class="absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-100">
-                    <button id="btn-record"
-                        class="w-full h-full flex items-center justify-center text-primary hover:text-white transition-colors cursor-pointer">
+            <div id="dynamic-island" class="relative bg-[#1a2c1a] shadow-2xl border border-white/10 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] w-16 h-16 rounded-[32px]">
+                <div id="state-idle" class="absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-100">
+                    <button id="btn-record" class="w-full h-full flex items-center justify-center text-primary hover:text-white transition-colors cursor-pointer">
                         <span class="material-symbols-outlined text-[32px]">mic</span>
                     </button>
                 </div>
-
-                <div id="state-recording"
-                    class="absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                <div id="state-recording" class="absolute inset-0 flex flex-col items-center justify-center opacity-0 transition-opacity duration-300 pointer-events-none">
                     <div class="flex items-center justify-between w-full px-4 pt-3">
-                        <button id="btn-stop"
-                            class="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-400 text-white shadow-lg cursor-pointer z-20">
+                        <button id="btn-stop" class="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-400 text-white shadow-lg cursor-pointer z-20">
                             <div class="w-3 h-3 bg-white rounded-[2px]"></div>
                         </button>
                         <div class="flex items-center gap-[3px] h-6 mx-2">
@@ -167,23 +69,21 @@
                         <div id="pulse-bar" class="h-full bg-primary shadow-[0_0_10px_#19e619] w-0"></div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
+        // 🔴 CRITICAL: Point to the Python Backend Port (8001)
         const API_URL = "http://127.0.0.1:8001/predict";
+        const ASK_BRAIN_URL = "http://127.0.0.1:8001/ask_brain";
         const SLICE_TIME_MS = 3000;
 
-        // --- STATE ---
         let isLive = false;
         let mediaRecorder = null;
         let audioChunks = [];
-        let recognition = null; // 🔴 STT Engine
+        let recognition = null; 
 
-        // --- UI REFS ---
         const glowLayer = document.getElementById('mood-glow');
         const statusText = document.getElementById('status-text');
         const statusContainer = document.getElementById('status-container');
@@ -195,7 +95,6 @@
         const pulseBar = document.getElementById('pulse-bar');
         const transcriptText = document.getElementById('transcript-text');
 
-        // --- COLORS ---
         const COLORS = {
             'angry': 'radial-gradient(circle, rgba(255, 0, 0, 0.8) 0%, transparent 70%)',
             'happy': 'radial-gradient(circle, rgba(255, 220, 0, 0.6) 0%, transparent 70%)',
@@ -205,238 +104,136 @@
             'neutral': 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)'
         };
 
-        // --- 1. SETUP SPEECH RECOGNITION (STT) ---
         function initSTT() {
-            // Check browser support
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                alert("Your browser does not support Speech Recognition. Try Chrome or Edge.");
+                alert("Browser doesn't support Speech Recognition.");
                 return null;
             }
-
             const rec = new SpeechRecognition();
-            rec.continuous = true;      // Keep listening even if user pauses
-            rec.interimResults = true;  // Show text WHILE speaking
+            rec.continuous = true;
+            rec.interimResults = true;
             rec.lang = 'en-US';
-
             rec.onresult = (event) => {
                 let finalTranscript = '';
                 let interimTranscript = '';
-
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
-                    }
+                    if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
+                    else interimTranscript += event.results[i][0].transcript;
                 }
-
-                // Update UI: Prioritize interim text for "Live" feel
                 const textToShow = interimTranscript || finalTranscript;
                 if (textToShow) {
                     transcriptText.innerText = `"${textToShow}"`;
                     transcriptText.style.opacity = '1';
                 }
             };
-
-            rec.onerror = (event) => {
-                console.error("STT Error:", event.error);
-            };
-
             return rec;
         }
-
-        // Initialize STT Engine
         recognition = initSTT();
 
-
-        // --- 2. TOGGLE LIVE MODE ---
         async function toggleLiveMode() {
             if (!isLive) {
-                // START
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     isLive = true;
                     setUIState(true);
-
-                    // Start Pulse (Audio to Python)
                     startPulseLoop(stream);
-
-                    // Start STT (Text to Screen)
                     if (recognition) recognition.start();
-
                 } catch (err) {
-                    alert("Microphone access denied.");
-                    console.error(err);
+                    alert("Mic Access Denied.");
                 }
             } else {
-                // STOP
                 isLive = false;
                 setUIState(false);
-
-                // Stop Pulse
                 if (mediaRecorder) mediaRecorder.stop();
-
-                // Stop STT & Trigger Brain
                 if (recognition) {
                     recognition.stop();
-
-                    // WAIT 1s for the final text to settle, then Ask Brain
                     setTimeout(() => {
                         const finalText = transcriptText.innerText.replace(/"/g, '');
-                        // Get current emotion from status text
-                        // We split "SAD (85%)" to just get "sad"
                         const currentStatus = statusText.innerText.split(' ')[0].toLowerCase();
-
-                        if (finalText.length > 0) {
-                            askLocalBrain(finalText, currentStatus);
-                        }
+                        if (finalText.length > 0) askLocalBrain(finalText, currentStatus);
                     }, 1000);
                 }
-
                 glowLayer.style.background = 'none';
             }
         }
 
-        // --- 3. THE PULSE LOOP (Audio Slices) ---
         function startPulseLoop(stream) {
             function recordSlice() {
                 if (!isLive) return;
-
-                // Reset & Animate Pulse Bar
-                pulseBar.style.transition = 'none';
-                pulseBar.style.width = '0%';
-                void pulseBar.offsetWidth; // Force Reflow
-                pulseBar.style.transition = `width ${SLICE_TIME_MS}ms linear`;
-                pulseBar.style.width = '100%';
-
-                // Start Recording
+                pulseBar.style.transition = 'none'; pulseBar.style.width = '0%'; void pulseBar.offsetWidth;
+                pulseBar.style.transition = `width ${SLICE_TIME_MS}ms linear`; pulseBar.style.width = '100%';
+                
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-
                 mediaRecorder.onstop = () => {
                     if (!isLive) return;
                     const blob = new Blob(audioChunks, { type: 'audio/wav' });
                     sendToBrain(blob);
-                    recordSlice(); // Recursive Loop
+                    recordSlice();
                 };
-
                 mediaRecorder.start();
-                setTimeout(() => {
-                    if (mediaRecorder.state === 'recording') mediaRecorder.stop();
-                }, SLICE_TIME_MS);
+                setTimeout(() => { if (mediaRecorder.state === 'recording') mediaRecorder.stop(); }, SLICE_TIME_MS);
             }
             recordSlice();
         }
 
-        // --- 4. API CALL ---
         async function sendToBrain(blob) {
             const formData = new FormData();
             formData.append("file", blob, "live_chunk.wav");
-
             try {
                 const response = await fetch(API_URL, { method: "POST", body: formData });
                 const data = await response.json();
-
                 if (data.error) return;
-
-                // Update Glow & Status
                 const emotionKey = data.emotion.toLowerCase();
                 const bgStyle = COLORS[emotionKey] || COLORS['neutral'];
                 glowLayer.style.background = bgStyle;
                 statusText.innerText = `${data.emotion.toUpperCase()} (${(data.confidence * 100).toFixed(0)}%)`;
-
-            } catch (e) {
-                console.log("Packet dropped (Normal in live mode)");
-            }
+            } catch (e) { console.log("Packet dropped"); }
         }
 
-        // --- UI TRANSITIONS ---
-        function setUIState(recording) {
-            if (recording) {
-                island.style.width = '200px';
-                stateIdle.style.opacity = '0';
-                stateIdle.style.pointerEvents = 'none';
-                setTimeout(() => {
-                    stateRec.style.opacity = '1';
-                    stateRec.style.pointerEvents = 'auto';
-                    statusContainer.style.opacity = '1';
-                    statusText.innerText = "Listening...";
-                }, 200);
-            } else {
-                stateRec.style.opacity = '0';
-                stateRec.style.pointerEvents = 'none';
-                statusContainer.style.opacity = '0';
-                setTimeout(() => {
-                    island.style.width = '64px';
-                    stateIdle.style.opacity = '1';
-                    stateIdle.style.pointerEvents = 'auto';
-                }, 100);
-            }
-        }
-
-        // --- LISTENERS ---
-        btnRecord.addEventListener('click', toggleLiveMode);
-        btnStop.addEventListener('click', toggleLiveMode);
-        // --- 5. ASK THE LOCAL BRAIN & SPEAK ---
         async function askLocalBrain(finalTranscript, lastEmotion) {
             if (!finalTranscript || finalTranscript.length < 2) return;
-
-            // Show "Thinking" UI
             statusText.innerText = "Thinking...";
-            pulseBar.style.background = "#ffffff"; // White pulse = thinking
-
+            pulseBar.style.background = "#ffffff";
             const formData = new FormData();
             formData.append("text", finalTranscript);
             formData.append("emotion", lastEmotion);
-
             try {
-                const response = await fetch("http://127.0.0.1:8001/ask_brain", {
-                    method: "POST",
-                    body: formData
-                });
+                const response = await fetch(ASK_BRAIN_URL, { method: "POST", body: formData });
                 const data = await response.json();
-
-                // DISPLAY & SPEAK
-                // 1. Show the AI response text
                 transcriptText.innerText = `AI: "${data.reply}"`;
-
-                // 2. Speak it with EMOTION
                 robotSpeak(data.reply, lastEmotion);
-
                 statusText.innerText = "Ready";
             } catch (e) {
                 console.error("Brain Dead:", e);
-                statusText.innerText = "Error";
+                statusText.innerText = "Brain Disconnected";
             }
         }
 
-        // --- 6. TTS FUNCTION (The "Puppet Master") ---
         function robotSpeak(text, emotion) {
             const synth = window.speechSynthesis;
             const utterance = new SpeechSynthesisUtterance(text);
-
-            // Modulate Voice based on Emotion
-            if (emotion === "sad") {
-                utterance.rate = 0.85;
-                utterance.pitch = 0.8;
-            } else if (emotion === "happy") {
-                utterance.rate = 1.1;
-                utterance.pitch = 1.2;
-            } else if (emotion === "angry") {
-                utterance.rate = 0.9;
-                utterance.pitch = 1.0;
-            } else {
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-            }
-
+            if (emotion === "sad") { utterance.rate = 0.85; utterance.pitch = 0.8; }
+            else if (emotion === "happy") { utterance.rate = 1.1; utterance.pitch = 1.2; }
+            else if (emotion === "angry") { utterance.rate = 0.9; utterance.pitch = 1.0; }
+            else { utterance.rate = 1.0; utterance.pitch = 1.0; }
             synth.speak(utterance);
         }
 
+        function setUIState(recording) {
+            if (recording) {
+                island.style.width = '200px'; stateIdle.style.opacity = '0'; stateIdle.style.pointerEvents = 'none';
+                setTimeout(() => { stateRec.style.opacity = '1'; stateRec.style.pointerEvents = 'auto'; statusContainer.style.opacity = '1'; statusText.innerText = "Listening..."; }, 200);
+            } else {
+                stateRec.style.opacity = '0'; stateRec.style.pointerEvents = 'none'; statusContainer.style.opacity = '0';
+                setTimeout(() => { island.style.width = '64px'; stateIdle.style.opacity = '1'; stateIdle.style.pointerEvents = 'auto'; }, 100);
+            }
+        }
 
+        btnRecord.addEventListener('click', toggleLiveMode);
+        btnStop.addEventListener('click', toggleLiveMode);
     </script>
 </body>
-
 </html>
